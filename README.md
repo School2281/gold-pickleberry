@@ -4,51 +4,13 @@ Building a system vulnerable to basic DOS, demonstrating web server DoS vulnerab
 LEGAL & ETHICAL DISCLAIMER
 This lab is STRICTLY FOR EDUCATIONAL PURPOSES ONLY. All testing must be conducted in an isolated, controlled environment on equipment you own. Unauthorized testing on systems you do not own is illegal and unethical. By using this lab, you agree to use it responsibly and only for learning.
 
-📋 Table of Contents
-Overview
+# Description
+This project is a self-contained educational lab that demonstrates fundamental Denial-of-Service (DoS) vulnerabilities in an NGINX web server running on a Raspberry Pi. The system is intentionally configured with weaknesses to help understanding. The lab includes a multi-video streaming server as the target application.
 
-System Architecture
-
-Vulnerabilities Demonstrated
-
-Setup & Installation
-
-Attack Methodology
-
-Defense & Mitigation
-
-Usage Guide
-
-Project Structure
-
-Learning Objectives
-
-Troubleshooting
-
-Contributing
-
-License
-
-🌐 Overview
-This project is a self-contained educational lab that demonstrates fundamental Denial-of-Service (DoS) vulnerabilities in an NGINX web server running on a Raspberry Pi. The system is intentionally configured with weaknesses to help you understand:
-
-How DoS attacks work at the technical level
-
-Common server misconfigurations that enable attacks
-
-The relationship between resources (connections, memory, CPU)
-
-Practical defensive configurations to mitigate attacks
-
-The lab includes a multi-video streaming server as the target application, attack scripts to demonstrate vulnerabilities, and configuration files to transition from vulnerable to secure states.
-
-🏗️ System Architecture
-High-Level Diagram
-
-
-
-
-
+- Connection Pool Exhaustion
+- Memory Resource Exhaustion
+- Slowloris Vulnerability
+- Lack of Rate Limiting
 
 
 
