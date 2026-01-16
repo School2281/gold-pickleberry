@@ -1,11 +1,12 @@
-# gold-pickleberry
+# Gold-pickleberry
 Building a system vulnerable to basic DOS, demonstrating web server DoS vulnerabilities and defenses
 
 LEGAL & ETHICAL DISCLAIMER
 This lab is STRICTLY FOR EDUCATIONAL PURPOSES ONLY. All testing must be conducted in an isolated, controlled environment on equipment you own. Unauthorized testing on systems you do not own is illegal and unethical. By using this lab, you agree to use it responsibly and only for learning.
 
 # Description
-This project is a self-contained educational lab that demonstrates fundamental Denial-of-Service (DoS) vulnerabilities in an NGINX web server running on a Raspberry Pi. The system is intentionally configured with weaknesses to help understanding. The lab includes a multi-video streaming server as the target application.
+This project is a self-contained educational lab that demonstrates fundamental Denial-of-Service (DoS) vulnerabilities in an NGINX web server running on a Raspberry Pi. The system is intentionally configured with weaknesses to help understanding. The lab includes a multi-video streaming server as the target application. The following vulnerabilities are possible.
+
 
 - Connection Pool Exhaustion
 - Memory Resource Exhaustion
