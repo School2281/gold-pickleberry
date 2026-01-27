@@ -1,0 +1,21 @@
+# In the 'events' block, set an absurdly low number of workers
+events {
+    # CRITICAL: Only 1 worker to handle ALL connections
+    worker_connections 5;  # Normally 512-1024. Set to 5-10 for vulnerability
+    # Disable multi_accept to process connections one by one
+    multi_accept off;
+}
+
+# In the 'http' block, reduce timeouts
+http {
+    # Disable or set extremely high timeouts
+    keepalive_timeout 3600;  # Keep connections alive for 1 hour
+    client_body_timeout 0;    # No timeout for receiving request body
+    client_header_timeout 0;  # No timeout for receiving request headers
+    
+    # Disable connection limiting
+    # Normally you'd have 'limit_conn_zone' here - remove or comment it out
+    
+    # Include your site configs
+    include /etc/nginx/sites-enabled/*;
+}

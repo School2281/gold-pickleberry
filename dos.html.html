@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video Stream</title>
+    <style>
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            height: 100%; 
+            background: black; 
+            font-family: Arial, sans-serif;
+        }
+        
+        #video-container {
+            width: 100%;
+            height: calc(100vh - 60px);
+            position: relative;
+        }
+        
+        video { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain; 
+        }
+        
+        video::-webkit-media-controls-panel { 
+            opacity: 0; 
+        }
+        
+        video:hover::-webkit-media-controls-panel { 
+            opacity: 1; 
+        }
+        
+        #controls {
+            height: 60px;
+            background: rgba(30, 30, 30, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .video-btn {
+            background: #444;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .video-btn:hover {
+            background: #555;
+            transform: translateY(-2px);
+        }
+        
+        .video-btn.active {
+            background: #007bff;
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+        }
+        
+        #current-video {
+            color: white;
+            font-size: 14px;
+            position: absolute;
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="video-container">
+        <video id="vid" autoplay muted playsinline loop>
+            Your browser does not support HTML5 video.
+        </video>
+    </div>
+    
+    <div id="controls">
+        <button class="video-btn active" data-video="video1.mp4">Video 1</button>
+        <button class="video-btn" data-video="video2.mp4">Video 2</button>
+        <button class="video-btn" data-video="video3.mp4">Video 3</button>
+        <span id="current-video">Now Playing: Video 1</span>
+    </div>
+
+    <script>
+        // Video sources array
+        const videoSources = [
+            { name: "Video 1", src: "video1.mp4" },
+            { name: "Video 2", src: "video2.mp4" },
+            { name: "Video 3", src: "video3.mp4" }
+        ];
+        
+        // Get DOM elements
+        const videoElement = document.getElementById('vid');
+        const videoButtons = document.querySelectorAll('.video-btn');
+        const currentVideoSpan = document.getElementById('current-video');
+        
+        // Function to switch video
+        function switchVideo(videoSrc, videoName, clickedButton) {
+            // Update video source
+            videoElement.src = videoSrc;
+            
+            // Update button states
+            videoButtons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+            clickedButton.classList.add('active');
+            
+            // Update current video display
+            currentVideoSpan.textContent = `Now Playing: ${videoName}`;
+            
+            // Load and play the new video
+            videoElement.load();
+            videoElement.play();
+        }
+        
+        // Add click event to buttons
+        videoButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const videoSrc = this.getAttribute('data-video');
+                const videoName = this.textContent;
+                switchVideo(videoSrc, videoName, this);
+            });
+        });
+        
+        // Optional: Keyboard shortcuts for switching (1, 2, 3 keys)
+        document.addEventListener('keydown', function(event) {
+            if (event.key >= '1' && event.key <= '3') {
+                const index = parseInt(event.key) - 1;
+                if (index < videoButtons.length) {
+                    const button = videoButtons[index];
+                    const videoSrc = button.getAttribute('data-video');
+                    const videoName = button.textContent;
+                    switchVideo(videoSrc, videoName, button);
+                }
+            }
+        });
+        
+        // Error handling for video loading
+        videoElement.addEventListener('error', function() {
+            console.error('Error loading video:', videoElement.src);
+            alert(`Error loading video: ${videoElement.src}. Please check the file path.`);
+        });
+    </script>
+</body>
+</html>

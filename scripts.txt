@@ -1,0 +1,36 @@
+#!/bin/bash
+# setup-nginx-from-github.sh
+
+echo "=== Setting up NGINX Server from GitHub ==="
+
+# 1. Install dependencies
+echo "Installing Git and NGINX..."
+sudo apt update
+sudo apt install git nginx -y
+
+# 2. Clone your repository
+echo "Cloning your GitHub repository..."
+git clone https://github.com/YOUR-USERNAME/YOUR-REPO.git nginx-setup
+
+# 3. Navigate to the folder
+cd nginx-setup
+
+# 4. Check what files you have
+echo "Files downloaded:"
+ls -la
+
+# 5. Set up NGINX (adjust based on your files)
+echo "Setting up NGINX..."
+# If you have a setup script in your repo, run it:
+# chmod +x setup.sh
+# ./setup.sh
+
+# Or manually copy configs:
+sudo cp nginx.conf /etc/nginx/nginx.conf
+sudo cp site-config.conf /etc/nginx/sites-available/
+
+# 6. Restart NGINX
+sudo systemctl restart nginx
+
+echo "✅ Done! Your files are in ~/nginx-setup/"
+echo "Access your server at: http://$(hostname -I | awk '{print $1}')"
