@@ -4,6 +4,11 @@
 LOG_FILE="/home/pi/startup.log"
 REPO_DIR="/home/pi/nginx-server"  # Change to your repo name
 
+# Create log file and set permissions first
+sudo touch "$LOG_FILE"
+sudo chown pi:pi "$LOG_FILE"
+sudo chmod 644 "$LOG_FILE"
+
 echo "=== $(date) ===" >> $LOG_FILE
 echo "Starting NGINX deployment..." >> $LOG_FILE
 
@@ -19,8 +24,8 @@ sleep 15
 # 2. Check if NGINX is installed
 if ! command -v nginx &> /dev/null; then
     log "NGINX not found, installing..."
-    sudo apt update
-    sudo apt install nginx -y
+    sudo apt update >> "$LOG_FILE" 2>&1
+    sudo apt install nginx -y >> "$LOG_FILE" 2>&1
 fi
 
 # 3. Deploy configuration files
@@ -70,25 +75,17 @@ if [ -d "$REPO_DIR" ]; then
         log "Copied index.html"
     fi
     
-    # Copy video.mp4
-    if [ -f "$REPO_DIR/video1.mp4" ]; then
-        sudo cp "$REPO_DIR/video1.mp4" /var/www/html/
-        log "Copied video.mp4"
-    fi
-
-    if [ -f "$REPO_DIR/video2.mp4" ]; then
-        sudo cp "$REPO_DIR/video2.mp4" /var/www/html/
-        log "Copied video.mp4"
-    fi
-
-    if [ -f "$REPO_DIR/video3.mp4" ]; then
-        sudo cp "$REPO_DIR/video3.mp4" /var/www/html/
-        log "Copied video.mp4"
-    fi
+    # Copy video files
+    for i in {1..3}; do
+        if [ -f "$REPO_DIR/video$i.mp4" ]; then
+            sudo cp "$REPO_DIR/video$i.mp4" /var/www/html/
+            log "Copied video$i.mp4"
+        fi
+    done
     
     # Copy any other files in repo root (CSS, JS, images)
     for file in "$REPO_DIR"/*; do
-        if [ -f "$file" ] && [[ "$file" != *.conf ]] && [ "$(basename "$file")" != "index.html" ] && [ "$(basename "$file")" != "video1.mp4" ] && [ "$(basename "$file")" != "video2.mp4" ] && [ "$(basename "$file")" != "video3.mp4" ]; then
+        if [ -f "$file" ] && [[ "$file" != *.conf ]] && [[ "$(basename "$file")" != video*.mp4 ]] && [ "$(basename "$file")" != "index.html" ]; then
             sudo cp "$file" /var/www/html/
             log "Copied $(basename "$file")"
         fi
@@ -100,7 +97,7 @@ if [ -d "$REPO_DIR" ]; then
     log "Set permissions"
     
 else
-    log "ERROR: Repository directory not found at $REPO_DIR" >> $LOG_FILE
+    log "ERROR: Repository directory not found at $REPO_DIR"
 fi
 
 # 4. Test and restart NGINX
@@ -128,9 +125,4 @@ if sudo nginx -t >> $LOG_FILE 2>&1; then
         
     else
         log "❌ NGINX failed to start"
-    fi
-else
-    log "❌ NGINX configuration test failed"
-fi
-
-echo "=== Deployment complete ===" >> $LOG_FILE
+        sudo systemctl status nginx >> "$
