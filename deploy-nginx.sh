@@ -39,20 +39,7 @@ fi
 log "Ensuring NGINX runtime directories exist..."
 
 # Create runtime directory (systemd might do this, but we ensure it)
-mkdir -p /run/nginx
-chown www-data:www-data /run/nginx
-chmod 755 /run/nginx
-
-# Also fix log directory
-mkdir -p /var/log/nginx
-chown -R www-data:www-data /var/log/nginx
-
-# Fix cache directory
-mkdir -p /var/cache/nginx
-chown -R www-data:www-data /var/cache/nginx
-
-# Set sticky bit on temp directories if needed
-chmod +t /run/nginx 2>/dev/null || true
+systemctl daemon-reload
 
 # 3. Deploy configuration files
 if [ -d "$REPO_DIR" ]; then
