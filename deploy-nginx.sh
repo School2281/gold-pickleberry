@@ -3,7 +3,7 @@
 
 # Determine the home directory based on who's running the script
 if [ "$USER" = "root" ]; then
-    HOME_DIR="/home/pi"
+    HOME_DIR="/home/kali"
     LOG_FILE="$HOME_DIR/startup.log"
     REPO_DIR="$HOME_DIR/gold-pickleberry"
 else
