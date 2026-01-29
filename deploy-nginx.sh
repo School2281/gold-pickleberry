@@ -125,4 +125,8 @@ if sudo nginx -t >> $LOG_FILE 2>&1; then
         
     else
         log "❌ NGINX failed to start"
-        sudo systemctl status nginx >> "$"
+        sudo systemctl status nginx >> "$LOG_FILE" 2>&1
+    fi
+else
+    log "❌ NGINX configuration test failed"
+fi
