@@ -35,6 +35,15 @@ if ! command -v nginx &> /dev/null; then
     apt install nginx -y >> "$LOG_FILE" 2>&1
 fi
 
+sed -i '/^user /d' /etc/nginx/nginx.conf
+
+# FIX 2: Use /tmp instead of /run for PID
+sed -i 's|pid /run/nginx.pid;|pid /tmp/nginx.pid;|' /etc/nginx/nginx.conf
+
+# FIX 3: Create PID file with correct permissions
+touch /tmp/nginx.pid
+chown www-data:www-data /tmp/nginx.pid
+
 # In your script, add this comprehensive fix:
 log "Ensuring NGINX runtime directories exist..."
 
