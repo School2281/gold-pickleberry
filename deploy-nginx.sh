@@ -5,11 +5,11 @@
 if [ "$USER" = "root" ]; then
     HOME_DIR="/home/pi"
     LOG_FILE="$HOME_DIR/startup.log"
-    REPO_DIR="$HOME_DIR/nginx-server"
+    REPO_DIR="$HOME_DIR/gold-pickleberry"
 else
     HOME_DIR="$HOME"
     LOG_FILE="$HOME_DIR/startup.log"
-    REPO_DIR="$HOME_DIR/nginx-server"
+    REPO_DIR="$HOME_DIR/gold-pickleberry"
 fi
 
 echo "=== $(date) ===" >> "$LOG_FILE"
