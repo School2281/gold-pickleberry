@@ -50,9 +50,25 @@ log "Ensuring NGINX runtime directories exist..."
 # Create runtime directory (systemd might do this, but we ensure it)
 systemctl daemon-reload
 
+# NEW: Install Python dependencies for fractal
+log "Installing Python dependencies for fractal generator..."
+if ! command -v pip3 &> /dev/null; then
+    apt install python3-pip -y >> "$LOG_FILE" 2>&1
+fi
+
+pip3 install flask numpy matplotlib pillow >> "$LOG_FILE" 2>&1
+log "Python dependencies installed"
+
 # 3. Deploy configuration files
 if [ -d "$REPO_DIR" ]; then
     log "Found repository at $REPO_DIR"
+
+    # NEW: Copy fractal_server.conf if exists
+    if [ -f "$REPO_DIR/fractal_server.conf" ]; then
+        cp "$REPO_DIR/fractal_server.conf" /etc/nginx/sites-available/fractal_server
+        ln -sf /etc/nginx/sites-available/fractal_server /etc/nginx/sites-enabled/
+        log "Copied fractal_server.conf"
+    fi
     
     # Copy main config if exists
     if [ -f "$REPO_DIR/nginx.conf" ]; then
@@ -69,12 +85,12 @@ if [ -d "$REPO_DIR" ]; then
     
     # Copy other .conf files
     for conf_file in "$REPO_DIR"/*.conf; do
-        if [ -f "$conf_file" ] && [ "$(basename "$conf_file")" != "nginx.conf" ] && [ "$(basename "$conf_file")" != "video_server.conf" ]; then
+        if [ -f "$conf_file" ] && [ "$(basename "$conf_file")" != "nginx.conf" ] && [ "$(basename "$conf_file")" != "video_server.conf" ] && [ "$(basename "$conf_file")" != "fractal_server.conf" ]; then
             cp "$conf_file" /etc/nginx/sites-available/
             log "Copied $(basename "$conf_file")"
         fi
     done
-    
+
     # Enable all site configs
     for site_conf in /etc/nginx/sites-available/*; do
         if [ -f "$site_conf" ]; then
@@ -107,11 +123,39 @@ if [ -d "$REPO_DIR" ]; then
     
     # Copy any other files in repo root (CSS, JS, images)
     for file in "$REPO_DIR"/*; do
-        if [ -f "$file" ] && [[ "$file" != *.conf ]] && [[ "$(basename "$file")" != video*.mp4 ]] && [ "$(basename "$file")" != "index.html" ]; then
+        if [ -f "$file" ] && [[ "$file" != *.conf ]] && [[ "$(basename "$file")" != video*.mp4 ]] && \
+           [ "$(basename "$file")" != "index.html" ] && [ "$(basename "$file")" != "fractal.service" ] && [ "$(basename "$file")" != "fractal_app.py" ]; then
             cp "$file" /var/www/html/
             log "Copied $(basename "$file")"
         fi
     done
+
+    if [ -f "$REPO_DIR/fractal_app.py" ]; then
+        log "Setting up fractal generator..."
+        
+        # Copy fractal directory if it exists
+        if [ -d "$REPO_DIR/fractal" ]; then
+            cp -r "$REPO_DIR/fractal/" /var/www/html/
+            log "Copied fractal directory"
+        else
+            # Or create fractal directory
+            mkdir -p /var/www/html/fractal
+            cp "$REPO_DIR/fractal_app.py" /var/www/html/fractal/app.py
+            log "Created fractal directory with app.py"
+        fi
+        
+        # Copy service file if exists
+        if [ -f "$REPO_DIR/fractal.service" ]; then
+            cp "$REPO_DIR/fractal.service" /etc/systemd/system/
+            log "Copied fractal.service"
+        fi
+        
+        # Start the service
+        systemctl daemon-reload
+        systemctl start fractal 2>/dev/null || true
+        systemctl enable fractal 2>/dev/null || true
+        log "Fractal setup complete"
+    fi  
     
     # Set permissions
     chown -R www-data:www-data /var/www/html
@@ -131,6 +175,12 @@ if nginx -t >> "$LOG_FILE" 2>&1; then
     # Verify it's running
     if systemctl is-active --quiet nginx; then
         log "✅ NGINX is running successfully"
+
+        if systemctl is-active --quiet fractal 2>/dev/null; then
+            log "✅ Fractal generator is running"
+        else
+            log "⚠️ Fractal generator not running"
+        fi
         
         # Display server info
         IP=$(hostname -I | awk '{print $1}')
