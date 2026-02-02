@@ -5,7 +5,7 @@ Wants=network.target
 
 [Service]
 Type=simple
-User=www-data
+User=kali
 WorkingDirectory=/var/www/html/fractal
 ExecStart=/usr/bin/python3 /var/www/html/fractal/app.py
 Restart=always
