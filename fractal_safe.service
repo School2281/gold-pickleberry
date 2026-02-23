@@ -12,23 +12,24 @@ Restart=always
 RestartSec=10
 
 # ============================================
-# SIMPLE RATE LIMITING & TIMEOUTS
+# PROCESS RESOURCE LIMITS
 # ============================================
 
-# Prevent hanging processes
-TimeoutStartSec=30
-TimeoutStopSec=30
-TimeoutSec=30
+# Process timeouts
+TimeoutStartSec=30      # How long to allow for startup
+TimeoutStopSec=30       # How long to allow for shutdown
+TimeoutSec=30           # Overall process timeout
 
-# Kill stalled requests after 30 seconds
-KillMode=mixed
-KillSignal=SIGTERM
+# Process management
+KillMode=mixed          # How to kill the process
+KillSignal=SIGTERM      # Which signal to use
 
-# Process limits - prevent too many concurrent requests
-TasksMax=5
+# Resource limits
+TasksMax=5              # Max number of concurrent threads/processes
+MemoryMax=512M          # Max RAM this process can use
 
-# Basic memory protection (optional but recommended)
-MemoryMax=512M
+# Optional: CPU limit if needed
+CPUQuota=50%          # Max 50% of one CPU core
 
 [Install]
 WantedBy=multi-user.target
