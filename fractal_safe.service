@@ -1,0 +1,34 @@
+[Unit]
+Description=Mandelbrot Fractal Generator
+After=network.target nginx.service
+Wants=network.target
+
+[Service]
+Type=simple
+User=kali
+WorkingDirectory=/var/www/html/fractal
+ExecStart=/usr/bin/python3 /var/www/html/fractal/app.py
+Restart=always
+RestartSec=10
+
+# ============================================
+# SIMPLE RATE LIMITING & TIMEOUTS
+# ============================================
+
+# Prevent hanging processes
+TimeoutStartSec=30
+TimeoutStopSec=30
+TimeoutSec=30
+
+# Kill stalled requests after 30 seconds
+KillMode=mixed
+KillSignal=SIGTERM
+
+# Process limits - prevent too many concurrent requests
+TasksMax=5
+
+# Basic memory protection (optional but recommended)
+MemoryMax=512M
+
+[Install]
+WantedBy=multi-user.target
